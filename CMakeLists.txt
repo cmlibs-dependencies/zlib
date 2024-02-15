@@ -9,13 +9,14 @@ set(CMAKE_BUILD_TYPE Release)
 
 option(ASM686 "Enable building i686 assembly implementation")
 option(AMD64 "Enable building amd64 assembly implementation")
+option(BUILD_SHARED_LIBS "Create shared libraries if on.")
 
-set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Installation directory for executables")
-set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
-set(INSTALL_INC_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Installation directory for headers")
-set(INSTALL_MAN_DIR "${CMAKE_INSTALL_PREFIX}/share/man" CACHE PATH "Installation directory for manual pages")
-set(INSTALL_PKGCONFIG_DIR "${CMAKE_INSTALL_PREFIX}/share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
-set(PACKAGE_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake/ZLIB-${zlib_VERSION}" CACHE STRING "Directory for CMake package config files.")
+set(INSTALL_BIN_DIR "bin" CACHE PATH "Installation directory for executables")
+set(INSTALL_LIB_DIR "lib" CACHE PATH "Installation directory for libraries")
+set(INSTALL_INC_DIR "include" CACHE PATH "Installation directory for headers")
+set(INSTALL_MAN_DIR "share/man" CACHE PATH "Installation directory for manual pages")
+set(INSTALL_PKGCONFIG_DIR "share/pkgconfig" CACHE PATH "Installation directory for pkgconfig (.pc) files")
+set(PACKAGE_CONFIG_DIR "lib/cmake/ZLIB-${zlib_VERSION}" CACHE STRING "Directory for CMake package config files.")
 
 
 include(CheckTypeSize)
@@ -84,9 +85,9 @@ endif()
 
 set(ZLIB_PC ${CMAKE_CURRENT_BINARY_DIR}/zlib.pc)
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zlib.pc.cmakein
-		${ZLIB_PC} @ONLY)
-configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein
-		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
+    ${ZLIB_PC} @ONLY)
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein
+    ${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
 
 #============================================================================
 # zlib
@@ -138,30 +139,30 @@ if(CMAKE_COMPILER_IS_GNUCC)
         set(ZLIB_ASMS contrib/amd64/amd64-match.S)
     endif ()
 
-	if(ZLIB_ASMS)
-		add_definitions(-DASMV)
-		set_source_files_properties(${ZLIB_ASMS} PROPERTIES LANGUAGE C COMPILE_FLAGS -DNO_UNDERLINE)
-	endif()
+    if(ZLIB_ASMS)
+        add_definitions(-DASMV)
+        set_source_files_properties(${ZLIB_ASMS} PROPERTIES LANGUAGE C COMPILE_FLAGS -DNO_UNDERLINE)
+    endif()
 endif()
 
 if(MSVC)
     if(ASM686)
-		ENABLE_LANGUAGE(ASM_MASM)
+        ENABLE_LANGUAGE(ASM_MASM)
         set(ZLIB_ASMS
-			contrib/masmx86/inffas32.asm
-			contrib/masmx86/match686.asm
-		)
+            contrib/masmx86/inffas32.asm
+            contrib/masmx86/match686.asm
+        )
     elseif (AMD64)
-		ENABLE_LANGUAGE(ASM_MASM)
+        ENABLE_LANGUAGE(ASM_MASM)
         set(ZLIB_ASMS
-			contrib/masmx64/gvmat64.asm
-			contrib/masmx64/inffasx64.asm
-		)
+            contrib/masmx64/gvmat64.asm
+            contrib/masmx64/inffasx64.asm
+        )
     endif()
 
-	if(ZLIB_ASMS)
-		add_definitions(-DASMV -DASMINF)
-	endif()
+    if(ZLIB_ASMS)
+        add_definitions(-DASMV -DASMINF)
+    endif()
 endif()
 
 # parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
@@ -187,12 +188,12 @@ endif(MINGW)
 
 if(DEFINED BUILD_SHARED_LIBS AND NOT BUILD_SHARED_LIBS)
     set(_ACTIVE_PROJECT zlibstatic)
-    add_library(zlibstatic STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    add_library(${_ACTIVE_PROJECT} STATIC ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
 else()
     set(_ACTIVE_PROJECT zlib)
-    add_library(zlib SHARED ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_DLL_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
-    set_target_properties(zlib PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
-    set_target_properties(zlib PROPERTIES SOVERSION 1)
+    add_library(${_ACTIVE_PROJECT} SHARED ${ZLIB_SRCS} ${ZLIB_ASMS} ${ZLIB_DLL_SRCS} ${ZLIB_PUBLIC_HDRS} ${ZLIB_PRIVATE_HDRS})
+    set_target_properties(${_ACTIVE_PROJECT} PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
+    set_target_properties(${_ACTIVE_PROJECT} PROPERTIES SOVERSION 1)
 endif()
 
 target_include_directories(
@@ -216,20 +217,20 @@ endif()
 
 if(UNIX)
     # On unix-like platforms the library is almost always called libz
-   set_target_properties(${_ACTIVE_PROJECT} PROPERTIES OUTPUT_NAME z)
-   if(TARGET zlib AND NOT APPLE)
-     set_target_properties(zlib PROPERTIES LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/zlib.map\"")
-   endif()
+    set_target_properties(${_ACTIVE_PROJECT} PROPERTIES OUTPUT_NAME z)
+    if(TARGET zlib AND NOT APPLE)
+       set_target_properties(zlib PROPERTIES LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/zlib.map\"")
+    endif()
 elseif(BUILD_SHARED_LIBS AND WIN32)
     # Creates zlib1.dll when building shared library version
     set_target_properties(zlib PROPERTIES SUFFIX "1.dll")
 endif()
 
-if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
+if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
     install(TARGETS ${_ACTIVE_PROJECT}
         EXPORT zlib-config
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT runtime
-        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT development
+        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT runtime
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT runtime NAMELINK_COMPONENT development)
 
     install(EXPORT zlib-config DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
@@ -241,10 +242,10 @@ if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
     install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}" COMPONENT development)
 endif()
 if(NOT SKIP_INSTALL_FILES AND NOT SKIP_INSTALL_ALL )
-    install(FILES zlib.3 DESTINATION "${INSTALL_MAN_DIR}/man3")
+    install(FILES zlib.3 DESTINATION "${INSTALL_MAN_DIR}/man3" COMPONENT documentation)
 endif()
 if(NOT SKIP_INSTALL_FILES AND NOT SKIP_INSTALL_ALL )
-    install(FILES ${ZLIB_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}")
+    install(FILES ${ZLIB_PC} DESTINATION "${INSTALL_PKGCONFIG_DIR}" COMPONENT development)
 endif()
 
 # Install targets
