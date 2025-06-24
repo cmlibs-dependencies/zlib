@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.0)
+cmake_minimum_required(VERSION 3.15.0)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
 set(VERSION "1.2.12")
