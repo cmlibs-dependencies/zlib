@@ -242,7 +242,7 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
 
     install(EXPORT zlib-targets DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
     write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/zlib-targets-version.cmake COMPATIBILITY AnyNewerVersion)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-targets-version.cmake DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/zlib-targets-version.cmake DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
     install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}" COMPONENT development)
