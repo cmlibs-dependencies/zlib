@@ -1,0 +1,5 @@
+
+message(STATUS "Finding Zlib:")
+include("${CMAKE_CURRENT_LIST_DIR}/zlib-targets.cmake")
+set(ZLIB_FOUND TRUE)
+message(STATUS "Leaving finding ZLIB:")
