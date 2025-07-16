@@ -227,16 +227,22 @@ elseif(BUILD_SHARED_LIBS AND WIN32)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
+    include(CMakePackageConfigHelpers)
+
+    configure_package_config_file(
+        zlib-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake
+        INSTALL_DESTINATION ${PACKAGE_CONFIG_DIR})
+
     install(TARGETS ${_ACTIVE_PROJECT}
-        EXPORT zlib-config
+        EXPORT zlib-targets
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT runtime
         ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT runtime
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT runtime NAMELINK_COMPONENT development)
 
-    install(EXPORT zlib-config DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/zlib-config-version.cmake COMPATIBILITY AnyNewerVersion)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-config-version.cmake DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
+    install(EXPORT zlib-targets DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
+    write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/zlib-targets-version.cmake COMPATIBILITY AnyNewerVersion)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-targets-version.cmake DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
     install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}" COMPONENT development)
