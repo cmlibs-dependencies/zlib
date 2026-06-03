@@ -241,6 +241,7 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT runtime NAMELINK_COMPONENT development)
 
     install(EXPORT zlib-targets DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
+    export(TARGETS ${_ACTIVE_PROJECT} FILE zlib-targets.cmake)
     write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/zlib-config-version.cmake COMPATIBILITY AnyNewerVersion)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zlib-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/zlib-config-version.cmake DESTINATION ${PACKAGE_CONFIG_DIR} COMPONENT development)
 endif()
